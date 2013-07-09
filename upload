@@ -1,0 +1,24 @@
+#!/usr/local/bin/node
+var fs = require('fs');
+var db = require('../lib/db');
+
+var contentTypes = {
+    'jpg':'image/jpeg',
+    'jpeg':'image/jpeg',
+    'png':'image/png',
+}
+if(process.argv.length < 3)
+    throw 'Not enough arguments';
+
+var filename = process.argv[2];
+
+var extIndex = filename.lastIndexOf('.');
+var ext = filename.slice(extIndex + 1);
+var name = filename.slice(0, ext);
+
+if(!contentTypes[ext])
+    throw 'Invalid/missing extension';
+
+fs.createReadStream(filename).pipe(
+    db.attachment.insert(name, filename, null, contentTypes[ext]);
+);
